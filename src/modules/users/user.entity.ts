@@ -6,14 +6,17 @@ export class UserEntity {
   id: number;
 
   @Column({ name: 'name' })
-  ten: string;
+  name: string;
 
   @Column({ name: 'create_at' })
-  ngaytao: Date;
+  datecreate: Date;
 
   @Column({ name: 'create_by' })
-  nguoitao: number;
+  usercreate: number;
 
   @Column({ name: 'email' })
   email: string;
+  
+  @Column({ name: 'password' })
+  password: string;
 }
