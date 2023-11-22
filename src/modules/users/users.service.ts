@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -23,33 +19,34 @@ export class UsersService {
   }
 
   async logIn(email, password) {
-    const user = await this.userRepository.findOneBy({ email });
-    if (!user) {
-      throw new ForbiddenException('Email không tồn tại');
+    try {
+      const user = await this.userRepository.findOneBy({ email });
+      if (!user) {
+        throw new ForbiddenException('Email không tồn tại');
+      }
+      const passwordMatched = await argon2.verify(user?.password, password);
+      if (!passwordMatched) {
+        throw new ForbiddenException('password không chính xác');
+      }
+      delete user.password;
+      return await this.signJwtString(user?.id, user?.email);
+    } catch (error) {
+      console.error(error.message);
+      throw new ForbiddenException('Đăng nhập thất bại');
     }
-    const passwordMatched = await argon2.verify(user?.password, password);
-    if (!passwordMatched) {
-      throw new ForbiddenException('password không chính xác');
-    }
-    delete user.password;
-    return user;
   }
 
-  async reGisTer(data: any): Promise<string> {
+  async reGisTer(data: any) {
     try {
       const { email, password, name, usercreate } = data;
-      // Type checking for required parameters
       if (!email || !password || !name || !usercreate) {
         throw new ForbiddenException('Invalid input data');
       }
-      // Check if email already exists
       const existingUser = await this.userRepository.findOneBy({ email });
       if (existingUser) {
-        throw new ForbiddenException( 'Email đã tồn tại');
+        throw new ForbiddenException('Email đã tồn tại');
       }
-      // Hash the password
       const hashedPassword = await argon2.hash(password);
-      // Save the user data
       const userData = {
         name,
         email,
@@ -58,10 +55,22 @@ export class UsersService {
         usercreate,
       };
       await this.userRepository.save(userData);
-      return 'Cập nhập thành công';
+      return await this.signJwtString(existingUser?.id, existingUser?.email);
     } catch (error) {
       console.error('Registration failed:', error.message);
       throw new ForbiddenException('Cập nhập thất bại');
     }
+  }
+
+  /* Function declare token */
+  async signJwtString(userId: number, email: string): Promise<any> {
+    const payload = {
+      sub: userId,
+      email,
+    };
+    const signToken = await this.jwtService.signAsync(payload);
+    return {
+      access_token: signToken,
+    };
   }
 }
