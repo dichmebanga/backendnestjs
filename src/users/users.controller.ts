@@ -28,7 +28,7 @@ export class UsersController {
       'Set-Cookie',
       serialize('accessToken', token?.access_token, {
         httpOnly: true,
-        sameSite: 'None',
+        sameSite: 'none',
         secure: true,
       }),
     );
@@ -42,7 +42,7 @@ export class UsersController {
       'Set-Cookie',
       serialize('accessToken', token?.access_token, {
         httpOnly: true,
-        sameSite: 'None',
+        sameSite: 'none',
         secure: true,
       }),
     );
