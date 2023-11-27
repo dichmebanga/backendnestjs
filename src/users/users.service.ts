@@ -4,6 +4,8 @@ import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +13,7 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
+    @InjectQueue('user-delete') private UserDeleteQueue: Queue,
     @InjectDataSource() readonly connection: DataSource,
   ) {}
 
@@ -59,6 +62,17 @@ export class UsersService {
     } catch (error) {
       console.error('Registration failed:', error.message);
       throw new ForbiddenException('Cập nhập thất bại');
+    }
+  }
+
+  async deLeTe(data: any = null) {
+    try {
+      const job = await this.UserDeleteQueue.add('user-delete', {
+        messager: 'đã xóa',
+      });
+      console.log('job', job);
+    } catch (error) {
+      throw new ForbiddenException('Xóa bỏ thất bại');
     }
   }
 

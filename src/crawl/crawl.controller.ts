@@ -25,4 +25,9 @@ export class CrawlController {
     const { url } = query;
     return await this.crawlService.getHTMLWeb(url);
   }
+
+  @Get('/get-data-database')
+  async getDatabaseStore(){
+    return await this.crawlService.getDataBase()
+  }
 }

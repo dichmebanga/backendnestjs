@@ -6,6 +6,7 @@ import { CrawlModule } from './crawl/crawl.module';
 import { CrawlsEntity } from './crawl/crawl.entity';
 import { GatewayModule } from './gateway/gateway.module';
 import * as dotenv from 'dotenv';
+import { BullModule } from '@nestjs/bull';
 
 dotenv.config();
 
@@ -23,6 +24,12 @@ dotenv.config();
       options: {
         encrypt: true,
         trustServerCertificate: true,
+      },
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
       },
     }),
     UsersModule,
