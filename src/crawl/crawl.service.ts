@@ -61,4 +61,8 @@ export class CrawlService {
 
     await browser.close();
   }
+
+  async getDataBase() {
+    return await this.crawlsRepository.find();
+  }
 }

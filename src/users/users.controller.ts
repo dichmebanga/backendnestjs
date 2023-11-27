@@ -48,4 +48,9 @@ export class UsersController {
     );
     return res.json({ success: true });
   }
+
+  @Post('delete-user')
+  async deleteUser(@Body() body){
+    await this.service.deLeTe()
+  }
 }
