@@ -7,6 +7,7 @@ import { CrawlsEntity } from './crawl/crawl.entity';
 import { GatewayModule } from './gateway/gateway.module';
 import * as dotenv from 'dotenv';
 import { BullModule } from '@nestjs/bull';
+import { FileModule } from './file/file.module';
 
 dotenv.config();
 
@@ -32,9 +33,10 @@ dotenv.config();
         port: 6379,
       },
     }),
+    GatewayModule,
     UsersModule,
     CrawlModule,
-    GatewayModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
